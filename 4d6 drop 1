@@ -3,11 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-// function for comparing elements in array
-int cmpfunc (const void * a, const void * b) 
-{
-    return ( *(int*)a - *(int*)b );
-}
+// Declare function for comparing elements in array
+int cmpfunc (const void * a, const void * b);
 
 int main(void)
 {
@@ -32,4 +29,10 @@ int main(void)
 // add the three highest
     int t = (DiceArray[1] + DiceArray[2] + DiceArray[3]);
     printf("%i", t);
+}
+
+// Function for comparing elements in an array
+int cmpfunc (const void * a, const void * b)
+{
+    return ( *(int*)a - *(int*)b );
 }
