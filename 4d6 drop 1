@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <stdlib.h>
+#include <time.h>
+
+// function for comparing elements in array
+int cmpfunc (const void * a, const void * b) 
+{
+    return ( *(int*)a - *(int*)b );
+}
+
+int main(void)
+{
+    int d1;
+    int d2;
+    int d3;
+    int d4;
+
+// To seed rand
+    srand(time(NULL));
+
+// Four dice rolls
+    d1 = (rand() % 6) + 1;
+    d2 = (rand() % 6) + 1;
+    d3 = (rand() % 6) + 1;
+    d4 = (rand() % 6) + 1;
+
+// Put dice in array, and sort in ascending order
+    int DiceArray[] = {d1, d2, d3, d4};
+    qsort(DiceArray, 4, sizeof(int), cmpfunc);
+
+// add the three highest
+    int t = (DiceArray[1] + DiceArray[2] + DiceArray[3]);
+    printf("%i", t);
+}
