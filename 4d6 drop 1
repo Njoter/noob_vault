@@ -3,35 +3,36 @@
 #include <stdlib.h>
 #include <time.h>
 
-// Declare function for comparing elements in array
+// Function for comparing elements in array
 int cmpfunc (const void * a, const void * b);
 
 int main(void)
 {
-    int d1;
-    int d2;
-    int d3;
-    int d4;
-
 // To seed rand
     srand(time(NULL));
 
-// Four dice rolls
-    d1 = (rand() % 6) + 1;
-    d2 = (rand() % 6) + 1;
-    d3 = (rand() % 6) + 1;
-    d4 = (rand() % 6) + 1;
+// Dice rolls
+    int n = 4;
+    int dice[n];
 
-// Put dice in array, and sort in ascending order
-    int DiceArray[] = {d1, d2, d3, d4};
-    qsort(DiceArray, 4, sizeof(int), cmpfunc);
+    for (int i = 0; i < n; i++)
+    {
+        dice[i] = (rand() % 6) + 1;
+    }
+
+// Sort in ascending order
+    qsort(dice, n, sizeof(int), cmpfunc);
 
 // add the three highest
-    int t = (DiceArray[1] + DiceArray[2] + DiceArray[3]);
-    printf("%i", t);
+    int t = 0;
+    for (int i = 1; i < n; i++)
+    {
+        t += (dice[i]);
+    }
+    printf("%i\n", t);
 }
 
-// Function for comparing elements in an array
+// Function for comparing elements in array
 int cmpfunc (const void * a, const void * b)
 {
     return ( *(int*)a - *(int*)b );
