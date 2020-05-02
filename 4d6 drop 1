@@ -4,102 +4,148 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <math.h>
 
-// Function prototype for 4d6D1
+typedef struct
+{
+    string attributes;
+    int score;
+    bool assigned;
+}
+stats;
+
+stats character[6];
+
+string attribute_names[] = {"str", "con", "dex", "int", "wis", "cha"};
+
+// Function prototypes
 int DiceRoll(void);
-
-// Function prototype comparing elements in array
 int cmpfunc (const void * a, const void * b);
+void assign_attribute(int roll);
+void print_character(void);
 
 int main(void)
 {
-    int attributes[6];
+    // Populate character[]
+    for (int i = 0; i < 6; i++)
+    {
+        character[i].attributes = attribute_names[i];
+        character[i].score = 0;
+        character[i].assigned = false;
+    }
+
     char r;
+
+    // Roll dice
     for (int i = 0; i < 6; i++)
     {
         do
         {
-            r = get_char("Press R to roll ");
+            r = get_char("Type R to roll ");
         }
         while (r != 'r' && r != 'R');
+
         int roll = DiceRoll();
-        printf("%i\n", roll);
+        printf("You rolled %i.\n", roll);
 
-        string a;
-        do
-        {
-            a = get_string("Assign %i to Str, Con, Dex, Int, Wis or Cha? ", roll);
-            for (int j = 0; a[j]; j++)
-            {
-                a[j] = tolower(a[j]);
-            }
-        }
-        while (strcmp(a, "str") && (strcmp(a, "con") && (strcmp(a, "dex") && (strcmp(a, "int") && (strcmp(a, "wis") && strcmp(a, "cha"))))) != 0);
-
-        if (strcmp(a, "str") == 0)
-        {
-            attributes[0] = roll;
-            printf("%i to Strenght\n\n", roll);
-        }
-        else if (strcmp(a, "con") == 0)
-        {
-            attributes[1] = roll;
-            printf("%i to Constitution\n\n", roll);
-        }
-        else if (strcmp(a, "dex") == 0)
-        {
-            attributes[2] = roll;
-            printf("%i to Dexterity\n\n", roll);
-        }
-        else if (strcmp(a, "int") == 0)
-        {
-            attributes[3] = roll;
-            printf("%i to Inteligence\n\n", roll);
-        }
-        else if (strcmp(a, "wis") == 0)
-        {
-            attributes[4] = roll;
-            printf("%i to Wisdom\n\n", roll);
-        }
-        else
-        {
-            attributes[5] = roll;
-            printf("%i to Charisma\n\n", roll);
-        }
+        //Assign roll to attributes
+        assign_attribute(roll);
     }
 
-    printf("Strength = %i\nConstitution = %i\nDexterity = %i\nIntelligence = %i\nWisdom = %i\nCharisma = %i\n", attributes[0], attributes[1], attributes[2], attributes[3], attributes[4], attributes[5]);
+        // Print character sheet
+        print_character();
 }
 
 // Funtion for 4d6D1
 int DiceRoll(void)
-// To seed rand
 {
+    // To seed rand
     srand(time(NULL));
 
-// Dice rolls
+    // Dice rolls
     int n = 4;
     int dice[n];
 
-    for (int i = 0; i < n; i++)
+    while (true)
     {
-        dice[i] = (rand() % 6) + 1;
-    }
+        for (int i = 0; i < n; i++)
+        {
+            dice[i] = (rand() % 6) + 1;
+        }
 
-// Sort in ascending order
-    qsort(dice, n, sizeof(int), cmpfunc);
+        // Sort in ascending order
+        qsort(dice, n, sizeof(int), cmpfunc);
 
-// add the three highest
-    int t = 0;
-    for (int i = 1; i < n; i++)
-    {
-        t += (dice[i]);
+        // Add the three highest
+        int t = 0;
+        for (int i = 1; i < n; i++)
+        {
+            t += (dice[i]);
+        }
+
+        // Roll must be higher than 8
+        if (t > 7)
+        {
+            return t;
+        }
     }
-    return t;
 }
 
 // Function for comparing elements in array
 int cmpfunc (const void * a, const void * b)
 {
     return ( *(int*)a - *(int*)b );
+}
+
+// Function for assigning roll to attribute
+void assign_attribute(int roll)
+{
+    while (true)
+    {
+        string a = get_string("Assign %i to Str, Con, Dex, Int, Wis or Cha?\n", roll);
+        printf("\n");
+
+        // Convert to lower case
+        for (int i = 0; i < 3; i++)
+        {
+            a[i] = tolower(a[i]);
+        }
+
+        // Check if valid attribute
+        for (int j = 0; j < 6; j++)
+        {
+            if (strcmp(a, character[j].attributes) == 0)
+            {
+
+                // Check if already assigned
+                if (character[j].assigned == true)
+                {
+                    printf("Attribute already assigned.\n");
+                    printf("\n");
+                    sleep(1);
+                    break;
+                }
+
+                // Assign roll to attribute
+                else
+                {
+                    character[j].score = roll;
+                    character[j].assigned = true;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void print_character(void)
+{
+    printf("\n");
+    printf("Strenght     = %i(%i)\n", character[0].score, (character[0].score - 10) / 2);
+    printf("Constitution = %i(%i)\n", character[1].score, (character[1].score - 10) / 2);
+    printf("Dexterity    = %i(%i)\n", character[2].score, (character[2].score - 10) / 2);
+    printf("Intelligence = %i(%i)\n", character[3].score, (character[3].score - 10) / 2);
+    printf("Wisdom       = %i(%i)\n", character[4].score, (character[4].score - 10) / 2);
+    printf("Charisma     = %i(%i)\n", character[5].score, (character[5].score - 10) / 2);
 }
