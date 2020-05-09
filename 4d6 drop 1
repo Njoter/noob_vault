@@ -1,23 +1,31 @@
 #include <stdio.h>
-#include <cs50.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <math.h>
+#include <stdbool.h>
 
 typedef struct
 {
-    string attributes;
+    char *attributes;
     int score;
-    bool assigned;
+    int modifier;
 }
 stats;
 
-stats character[6];
+stats attributes[] =
+{
+    {"str", 0, 0},
+    {"con", 0, 0},
+    {"dex", 0, 0},
+    {"int", 0, 0},
+    {"wis", 0, 0},
+    {"cha", 0, 0}
+};
 
-string attribute_names[] = {"str", "con", "dex", "int", "wis", "cha"};
+bool assigned[] = {false, false, false, false, false, false};
 
 // Function prototypes
 int DiceRoll(void);
@@ -27,14 +35,6 @@ void print_character(void);
 
 int main(void)
 {
-    // Populate character[]
-    for (int i = 0; i < 6; i++)
-    {
-        character[i].attributes = attribute_names[i];
-        character[i].score = 0;
-        character[i].assigned = false;
-    }
-
     char r;
 
     // Roll dice
@@ -42,7 +42,8 @@ int main(void)
     {
         do
         {
-            r = get_char("Type R to roll ");
+            printf("Type R to roll ");
+            scanf("%c", &r);
         }
         while (r != 'r' && r != 'R');
 
@@ -101,9 +102,11 @@ int cmpfunc (const void * a, const void * b)
 // Function for assigning roll to attribute
 void assign_attribute(int roll)
 {
+    char a[3];
     while (true)
     {
-        string a = get_string("Assign %i to Str, Con, Dex, Int, Wis or Cha?\n", roll);
+        printf("Assign %i to Str, Con, Dex, Int, Wis or Cha?\n", roll);
+        scanf("%s", a);
         printf("\n");
 
         // Convert to lower case
@@ -115,23 +118,22 @@ void assign_attribute(int roll)
         // Check if valid attribute
         for (int j = 0; j < 6; j++)
         {
-            if (strcmp(a, character[j].attributes) == 0)
+            if (strcmp(a, attributes[j].attributes) == 0)
             {
 
                 // Check if already assigned
-                if (character[j].assigned == true)
+                if (assigned[j] == true)
                 {
                     printf("Attribute already assigned.\n");
                     printf("\n");
-                    sleep(1);
                     break;
                 }
 
                 // Assign roll to attribute
                 else
                 {
-                    character[j].score = roll;
-                    character[j].assigned = true;
+                    attributes[j].score = roll;
+                    assigned[j] = true;
                     return;
                 }
             }
@@ -142,10 +144,10 @@ void assign_attribute(int roll)
 void print_character(void)
 {
     printf("\n");
-    printf("Strenght     = %i(%i)\n", character[0].score, (character[0].score - 10) / 2);
-    printf("Constitution = %i(%i)\n", character[1].score, (character[1].score - 10) / 2);
-    printf("Dexterity    = %i(%i)\n", character[2].score, (character[2].score - 10) / 2);
-    printf("Intelligence = %i(%i)\n", character[3].score, (character[3].score - 10) / 2);
-    printf("Wisdom       = %i(%i)\n", character[4].score, (character[4].score - 10) / 2);
-    printf("Charisma     = %i(%i)\n", character[5].score, (character[5].score - 10) / 2);
+    printf("Strenght     = %i(%i)\n", attributes[0].score, attributes[0].modifier);
+    printf("Constitution = %i(%i)\n", attributes[1].score, attributes[1].modifier);
+    printf("Dexterity    = %i(%i)\n", attributes[2].score, attributes[2].modifier);
+    printf("Intelligence = %i(%i)\n", attributes[3].score, attributes[3].modifier);
+    printf("Wisdom       = %i(%i)\n", attributes[4].score, attributes[4].modifier);
+    printf("Charisma     = %i(%i)\n", attributes[5].score, attributes[5].modifier);
 }
